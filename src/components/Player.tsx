@@ -4,17 +4,20 @@ type PlayerProps = {
   initialName: string;
   symbol: string;
   activePlayer: string;
+  onSaveName: (symbol: string, name: string) => void;
 };
 
 export default function Player({
   initialName,
   symbol,
   activePlayer,
+  onSaveName,
 }: PlayerProps) {
   const [name, setName] = useState<string>(initialName);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   function handleEditClick() {
+    if (isEditing) onSaveName(symbol, name);
     setIsEditing((editing) => !editing);
   }
 

@@ -5,7 +5,7 @@ import Log from "./components/Log.tsx";
 import Player from "./components/Player.tsx";
 import { WINNING_COMBINATIONS } from "./winning-combinations.ts";
 
-const initialGameBoard: (string | null)[][] = [
+const initialGameBoard: ("X" | "O" | null)[][] = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
@@ -13,15 +13,24 @@ const initialGameBoard: (string | null)[][] = [
 
 export type turnType = {
   square: { row: number; col: number };
-  player: string;
+  player: "X" | "O" | null;
+};
+
+type playersType = {
+  X: string;
+  O: string;
 };
 
 function App() {
   // const [activePlayer, setActivePlayer] = useState<string>("X");
   const [gameTurns, setGameTurns] = useState<turnType[]>([]);
+  const [players, setPlayers] = useState<playersType>({
+    X: "Player 1",
+    O: "Player 2",
+  });
 
-  function deriveActivePlayer(gameTurns: turnType[]) {
-    let currentPlayer = "X";
+  function deriveActivePlayer(gameTurns: turnType[]): "X" | "O" {
+    let currentPlayer: "X" | "O" = "X";
 
     if (gameTurns.length > 0 && gameTurns[0].player === "X")
       currentPlayer = "O";
@@ -49,6 +58,15 @@ function App() {
     setGameTurns([]);
   }
 
+  function handlePlayerNameChange(symbol: string, name: string) {
+    setPlayers((prevPlayers) => {
+      return {
+        ...prevPlayers,
+        [symbol]: name,
+      };
+    });
+  }
+
   const activePlayer = deriveActivePlayer(gameTurns);
 
   const gameBoard = [...initialGameBoard].map((row) => [...row]);
@@ -63,7 +81,7 @@ function App() {
       (position) => gameBoard[position.row][position.column],
     );
     if (first && first === second && first === third) {
-      winner = first;
+      winner = players[first];
     }
   }
 
@@ -77,11 +95,13 @@ function App() {
             symbol="X"
             initialName="Player 1"
             activePlayer={activePlayer}
+            onSaveName={handlePlayerNameChange}
           />
           <Player
             symbol="O"
             initialName="Player 2"
             activePlayer={activePlayer}
+            onSaveName={handlePlayerNameChange}
           />
         </ol>
         {(winner || hasDraw) && (
