@@ -21,21 +21,23 @@ function App() {
     return currentPlayer;
   }
 
-  const activePlayer = deriveActivePlayer(gameTurns);
-
   function onSelectSquare(rowIndex: number, colIndex: number) {
     // setActivePlayer((currentActivePlayer) =>
     //   currentActivePlayer === "X" ? "O" : "X",
     // );
     setGameTurns((prevTurns) => {
+      const currentActivePlayer = deriveActivePlayer(prevTurns);
+
       const newTurn: turnType = {
         square: { row: rowIndex, col: colIndex },
-        player: activePlayer,
+        player: currentActivePlayer,
       };
 
       return [newTurn, ...prevTurns];
     });
   }
+
+  const activePlayer = deriveActivePlayer(gameTurns);
 
   return (
     <main>
