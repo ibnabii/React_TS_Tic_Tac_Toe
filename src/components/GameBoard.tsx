@@ -1,22 +1,11 @@
-import { type turnType } from "../App.tsx";
-
-const initialGameBoard: (string | null)[][] = [
-  [null, null, null],
-  [null, null, null],
-  [null, null, null],
-];
-
 type GameBoardProps = {
   onSelectSquare: (row: number, col: number) => void;
-  turns: turnType[];
+  gameBoard: (string | null)[][];
 };
-export default function GameBoard({ turns, onSelectSquare }: GameBoardProps) {
-  const gameBoard = initialGameBoard;
-
-  for (const turn of turns) {
-    gameBoard[turn.square.row][turn.square.col] = turn.player;
-  }
-
+export default function GameBoard({
+  gameBoard,
+  onSelectSquare,
+}: GameBoardProps) {
   return (
     <ol id="game-board">
       {gameBoard.map((row, rowIndex) => (
@@ -26,7 +15,7 @@ export default function GameBoard({ turns, onSelectSquare }: GameBoardProps) {
               <li key={colIndex}>
                 <button
                   onClick={() => onSelectSquare(rowIndex, colIndex)}
-                  disabled={playerSymbol}
+                  disabled={!!playerSymbol}
                 >
                   {playerSymbol}
                 </button>
