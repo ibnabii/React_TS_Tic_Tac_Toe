@@ -1,7 +1,8 @@
 type gameOverProps = {
   winner: string | null;
+  onRestart: () => void;
 };
-export function GameOver({ winner }: gameOverProps) {
+export function GameOver({ winner, onRestart }: gameOverProps) {
   const gameOverMessage = winner ? winner + " won!" : "Draw!";
 
   return (
@@ -9,7 +10,7 @@ export function GameOver({ winner }: gameOverProps) {
       <h2>Game over!</h2>
       <p>{gameOverMessage}</p>
       <p>
-        <button>Rematch</button>
+        <button onClick={onRestart}>Rematch</button>
       </p>
     </div>
   );

@@ -19,7 +19,6 @@ export type turnType = {
 function App() {
   // const [activePlayer, setActivePlayer] = useState<string>("X");
   const [gameTurns, setGameTurns] = useState<turnType[]>([]);
-  const [hasWinner, setHasWinner] = useState<boolean>(false);
 
   function deriveActivePlayer(gameTurns: turnType[]) {
     let currentPlayer = "X";
@@ -46,9 +45,13 @@ function App() {
     });
   }
 
+  function handleRestart() {
+    setGameTurns([]);
+  }
+
   const activePlayer = deriveActivePlayer(gameTurns);
 
-  const gameBoard = initialGameBoard;
+  const gameBoard = [...initialGameBoard].map((row) => [...row]);
   for (const turn of gameTurns) {
     gameBoard[turn.square.row][turn.square.col] = turn.player;
   }
@@ -61,7 +64,6 @@ function App() {
     );
     if (first && first === second && first === third) {
       winner = first;
-      // setHasWinner(true);
     }
   }
 
@@ -82,7 +84,9 @@ function App() {
             activePlayer={activePlayer}
           />
         </ol>
-        {(winner || hasDraw) && <GameOver winner={winner} />}
+        {(winner || hasDraw) && (
+          <GameOver winner={winner} onRestart={handleRestart} />
+        )}
         <GameBoard onSelectSquare={onSelectSquare} gameBoard={gameBoard} />
       </div>
       <Log turns={gameTurns} />
