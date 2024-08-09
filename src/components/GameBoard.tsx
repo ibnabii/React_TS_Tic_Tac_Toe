@@ -1,31 +1,20 @@
-import { useState } from "react";
+import { type turnType } from "../App.tsx";
 
-const initialGameBoard = [
+const initialGameBoard: (string | null)[][] = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
 ];
 
 type GameBoardProps = {
-  activePlayer: string;
-  togglePlayer: () => void;
+  onSelectSquare: (row: number, col: number) => void;
+  turns: turnType[];
 };
-export default function GameBoard({
-  activePlayer,
-  togglePlayer,
-}: GameBoardProps) {
-  const [gameBoard, setGameBoard] =
-    useState<(string | null)[][]>(initialGameBoard);
+export default function GameBoard({ turns, onSelectSquare }: GameBoardProps) {
+  const gameBoard = initialGameBoard;
 
-  function handleSelectSquare(rowIndex: number, colIndex: number) {
-    setGameBoard((prevGameBoard) => {
-      const updatedBoard = [
-        ...prevGameBoard.map((innerArray) => [...innerArray]),
-      ];
-      updatedBoard[rowIndex][colIndex] = activePlayer;
-      return updatedBoard;
-    });
-    togglePlayer();
+  for (const turn of turns) {
+    gameBoard[turn.square.row][turn.square.col] = turn.player;
   }
 
   return (
@@ -35,7 +24,7 @@ export default function GameBoard({
           <ol>
             {row.map((playerSymbol, colIndex) => (
               <li key={colIndex}>
-                <button onClick={() => handleSelectSquare(rowIndex, colIndex)}>
+                <button onClick={() => onSelectSquare(rowIndex, colIndex)}>
                   {playerSymbol}
                 </button>
               </li>
