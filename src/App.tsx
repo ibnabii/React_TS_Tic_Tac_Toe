@@ -5,7 +5,9 @@ import Log from "./components/Log.tsx";
 import Player from "./components/Player.tsx";
 import { WINNING_COMBINATIONS } from "./winning-combinations.ts";
 
-const initialGameBoard: ("X" | "O" | null)[][] = [
+type playerType = "X" | "O" | null;
+
+const initialGameBoard: playerType[][] = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
@@ -13,7 +15,7 @@ const initialGameBoard: ("X" | "O" | null)[][] = [
 
 export type turnType = {
   square: { row: number; col: number };
-  player: "X" | "O" | null;
+  player: playerType;
 };
 
 type playersType = {
@@ -38,13 +40,31 @@ function App() {
     return currentPlayer;
   }
 
+  function deriveWinner(gameBoard: playerType[][], players: playersType) {
+    // check winning
+    let winner: string | null = null;
+    for (const combination of WINNING_COMBINATIONS) {
+      const [first, second, third] = combination.map(
+        (position) => gameBoard[position.row][position.column],
+      );
+      if (first && first === second && first === third) {
+        winner = players[first];
+      }
+    }
+    return winner;
+  }
+
+  function deriveGameboard(gameTurns: turnType[]) {
+    const gameBoard = [...initialGameBoard].map((row) => [...row]);
+    for (const turn of gameTurns) {
+      gameBoard[turn.square.row][turn.square.col] = turn.player;
+    }
+    return gameBoard;
+  }
+
   function onSelectSquare(rowIndex: number, colIndex: number) {
-    // setActivePlayer((currentActivePlayer) =>
-    //   currentActivePlayer === "X" ? "O" : "X",
-    // );
     setGameTurns((prevTurns) => {
       const currentActivePlayer = deriveActivePlayer(prevTurns);
-
       const newTurn: turnType = {
         square: { row: rowIndex, col: colIndex },
         player: currentActivePlayer,
@@ -68,23 +88,8 @@ function App() {
   }
 
   const activePlayer = deriveActivePlayer(gameTurns);
-
-  const gameBoard = [...initialGameBoard].map((row) => [...row]);
-  for (const turn of gameTurns) {
-    gameBoard[turn.square.row][turn.square.col] = turn.player;
-  }
-
-  // check winning
-  let winner: string | null = null;
-  for (const combination of WINNING_COMBINATIONS) {
-    const [first, second, third] = combination.map(
-      (position) => gameBoard[position.row][position.column],
-    );
-    if (first && first === second && first === third) {
-      winner = players[first];
-    }
-  }
-
+  const gameBoard = deriveGameboard(gameTurns);
+  const winner = deriveWinner(gameBoard, players);
   const hasDraw = gameTurns.length === 9 && !winner;
 
   return (
